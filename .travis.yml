@@ -1,0 +1,18 @@
+language: julia
+sudo: false
+os:
+  - linux
+  - osx
+julia:
+  - 0.3
+  - 0.4
+  - nightly
+notifications:
+  email: false
+
+script:
+  - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
+  - julia --check-bounds=yes -e 'Pkg.clone(pwd()); Pkg.build("PolarFact")'
+  - julia -e ' Pkg.test("PolarFact"; coverage=true)'
+after_success:
+  - julia -e 'cd(Pkg.dir("PolarFact")); Pkg.add("Coverage"); using Coverage; Codecov.submit(process_folder())'
